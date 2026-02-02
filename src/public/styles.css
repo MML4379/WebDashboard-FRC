@@ -1,0 +1,67 @@
+:root, * {
+    font-family: Inter, sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+}
+@supports (font-variation-settings: normal) {
+    :root, * {
+        font-family: InterVariable, sans-serif;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+body {
+    background: #000;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-self: center;
+    padding: 16px;
+    padding-left: 24px;
+    padding-right: 24px;
+    background: #1f1f1f;
+    color: #fdfdfd;
+}
+
+.navLinks {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    gap: 16px;
+}
+
+.navLink {
+    text-align: center;
+    color: #fdfdfd;
+    text-decoration: none;
+    padding: 8px;
+    margin: 16px;
+    width: 192px;
+    cursor: default;
+    transition: 1s;
+}
+.navLink:hover {
+    background: #4169e1;
+    transition: 1s;
+}
+
+#dataBox {
+    display: block;
+    position: absolute;
+    top: 160px;
+    background: #555;
+    width: 50%;
+    height: 128px;
+    color: #fdfdfd;
+    padding: 16px;
+    margin-left: 25%;
+}
