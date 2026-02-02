@@ -6,6 +6,7 @@ const app = express();
 const port = 5810;
 
 app.use(cors()); // CORS header
+app.use(express.json()); // JSON
 
 function randNum() {
     for (let i = 0; i < 128; i++) {
@@ -15,6 +16,7 @@ function randNum() {
 
 app.use(express.static(path.join(__dirname, "public")));
 
+// Random values until we have access to our RoboRIO
 app.get('/api/status', (req, res) => {
     let rx = randNum();
     let a = randNum();
