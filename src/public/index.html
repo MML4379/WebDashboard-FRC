@@ -7,18 +7,7 @@
         <link rel="stylesheet" href="assets/fonts/inter/inter.css">
     </head>
     <body>
-        <div class="navbar">
-            <div class="navLinks">
-                <a href="/" class="navLink">Home</a>
-                <a href="/raw_metrics.html" class="navLink">Raw Metrics</a>
-                <a href="/settings.html" class="navLink">Client Settings</a>
-                <a onclick="window.location.reload()" class="navLink">Reset</a>
-            </div>
-        </div>
-        <div id="dataBox">
-            <h1 id="boxTitle">TITLE</h1>
-            <span id="boxData">DATA</span>
-        </div>
-        <script type="module" src="js/main.js"></script>
+        <div id="app"></div>
+        <script type="module" src="js/main.js" defer></script>
     </body>
 </html>
