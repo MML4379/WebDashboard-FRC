@@ -35,6 +35,10 @@ app.get('/api/status', (req, res) => {
     res.status(200).json(status);
 });
 
+app.get("*Dashboard", (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(port, () => {
     console.log(`Server is listening on http://localhost:${port}.`);
 });
