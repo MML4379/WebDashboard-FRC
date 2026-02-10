@@ -1,5 +1,5 @@
-import Home from "../views/Home.js";
-import RawMetrics from "../views/RawMetrics.js";
+import Home from "./views/Home.js";
+import RawMetrics from "./views/RawMetrics.js";
 
 export const navigateTo = url => {
     history.pushState(null, null, url);
