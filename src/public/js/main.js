@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             navigateTo(e.target.href);
         }
-    });
+    });//a
 
     // Initialize router
     router();

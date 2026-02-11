@@ -12,7 +12,7 @@ const TEAM_IP = '10.72.50.2';
 const LOCAL = '127.0.0.1';
 const args = process.argv.slice(2);
 
-app.use(cors());
+app.use(cors());//
 app.use(express.json());
 
 // Create NetworkTables client

@@ -29,4 +29,4 @@ export const router = async () => {
 
     // inject view into dom
     document.getElementById('app').innerHTML = match.route.view;
-};
+};//
