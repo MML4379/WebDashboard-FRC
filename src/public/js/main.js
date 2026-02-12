@@ -4,16 +4,56 @@ import { router, navigateTo } from './router.js';
 let robotData = {};
 let isConnected = false;
 
+// Check if there is new data
+function hasDataChanged(newData) {
+    return JSON.stringify(newData) !== JSON.stringify(robotData);
+}
+
+// Deletes unnecessary keys
+function scrubData(data) {
+    // handle non-objects
+    if (typeof data !== 'object' || data === null) {
+        return data;
+    }
+
+    // handle arrays
+    if (Array.isArray(data)) {
+        return data.map(item => scrubData(item));
+    }
+
+    // handle actual objects
+    const cleaned = {};
+    for (const key in data) {
+        const lowerKey = key.toLowerCase();
+
+        // check if key contains specific words
+        const forbidden = lowerKey.includes('module') || lowerKey.includes('pathplanner');
+
+        if (!forbidden) {
+            // recursively clean the value in case it's a nested object
+            cleaned[key] = scrubData(data[key]);
+        } 
+    }
+    return cleaned;
+}
+
 // Fetch robot data from the API
 async function fetchRobotData() {
     try {
         const response = await fetch('/api/robot-data');
         if (response.ok) {
-            robotData = await response.json();
-            updateDisplay();
+            let rawData = await response.json();
+
+            // scrub keys before checking for changes
+            const cleanedData = scrubData(rawData);
+
+            if (hasDataChanged(cleanedData)) {
+                robotData = cleanedData;
+                updateDisplay();
+            }
         }
     } catch (error) {
-        console.error('Error fetching robot data:', error);
+        console.error("Error fetching robot data:", error);
     }
 }
 
@@ -168,10 +208,23 @@ function drawField2d(canvas, data) {
     }
     
     // Draw robot pose
-    if (data.Robot && Array.isArray(data.Robot) && data.Robot.length >= 2) {
-        const x = data.Robot[0];
-        const y = data.Robot[1];
-        const rotation = data.Robot[2] || 0; // Rotation in radians
+    // Try to find robot pose - check common variations
+    let robotPose = data.Robot || data.robot || data['Robot'] || data['.robot'];
+
+    // If still not found, look for any key containing 'robot' (case insensitive)
+    if (!robotPose) {
+        for (const [key, value] of Object.entries(data)) {
+            if (key.toLowerCase().includes('robot') && !key.startsWith('.')) {
+                robotPose = value;
+                break;
+            }
+        }
+    }
+
+    if (robotPose && Array.isArray(robotPose) && robotPose.length >= 2) {
+        const x = robotPose[0];
+        const y = robotPose[1];
+        const rotation = robotPose[2] || 0; // Rotation in radians
         
         const pos = fieldToCanvas(x, y);
         
@@ -184,11 +237,11 @@ function drawField2d(canvas, data) {
         ctx.rotate(-rotation); // Negative because canvas Y is flipped
         
         // Robot body
-        ctx.fillStyle = '#FF6B6B';
+        ctx.fillStyle = '#0264dd';
         ctx.fillRect(-robotWidth / 2, -robotHeight / 2, robotWidth, robotHeight);
         
         // Robot direction indicator (arrow)
-        ctx.fillStyle = '#FFD54F';
+        ctx.fillStyle = '#fc0';
         ctx.beginPath();
         ctx.moveTo(robotWidth / 2, 0);
         ctx.lineTo(robotWidth / 2 - 10, -8);
@@ -200,7 +253,7 @@ function drawField2d(canvas, data) {
         
         // Draw coordinate text
         ctx.fillStyle = '#e0e0e0';
-        ctx.font = '12px monospace';
+        ctx.font = '16px Inter';
         ctx.fillText(`X: ${x.toFixed(2)}m`, offsetX + 10, offsetY + 20);
         ctx.fillText(`Y: ${y.toFixed(2)}m`, offsetX + 10, offsetY + 35);
         ctx.fillText(`θ: ${(rotation * 180 / Math.PI).toFixed(1)}°`, offsetX + 10, offsetY + 50);
@@ -210,6 +263,8 @@ function drawField2d(canvas, data) {
     for (const [key, value] of Object.entries(data)) {
         if (key.startsWith('.') || key === 'Robot') continue;
         
+        if (key.toLowerCase().includes('robot')) continue;
+
         if (Array.isArray(value) && value.length >= 2 && !Array.isArray(value[0])) {
             // Single pose
             const pos = fieldToCanvas(value[0], value[1]);
@@ -347,6 +402,8 @@ function startDataPolling(interval = 100) {
     setInterval(fetchStatus, 1000); // Check connection less frequently
 }
 
+
+
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
     // Handle link clicks
@@ -355,7 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             navigateTo(e.target.href);
         }
-    });//a
+    });
 
     // Initialize router
     router();
