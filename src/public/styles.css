@@ -1,244 +1,815 @@
-#app { display: block; }
+/* ================================================================
+   FRC Dashboard Styling: "I spent too much time on this" - Michael
+   ================================================================ */
 
 :root {
-    --accent-color: #0264dd;
-    --background: #000;
-    --dark-color: #1a1a1a;
-    --light-color: #f8f8ff;
-    --muted: #888;
+    /* SmartDashboard Classic Colors */
+    --sd-bg-primary: #1e1e1e;
+    --sd-bg-secondary: #2d2d2d;
+    --sd-bg-tertiary: #3a3a3a;
+    --sd-bg-widget: #252526;
+    
+    /* Accent Colors */
+    --sd-accent: #007acc;
+    --sd-accent-light: #3399ff;
+    --sd-header-gradient-start: #004080;
+    --sd-header-gradient-end: #0066cc;
+    
+    /* Status Colors */
+    --sd-enabled: #4ec9b0;
+    --sd-disabled: #6e6e6e;
+    --sd-connected: #4CAF50;
+    --sd-disconnected: #f44336;
+    --sd-warning: #ff9800;
+    --sd-error: #e53935;
+    
+    /* Data Type Colors */
+    --sd-number: #b5cea8;
+    --sd-boolean-true: #4ec9b0;
+    --sd-boolean-false: #ce9178;
+    --sd-string: #ce9178;
+    --sd-array: #dcdcaa;
+    
+    /* Text Colors */
+    --sd-text-primary: #d4d4d4;
+    --sd-text-secondary: #9e9e9e;
+    --sd-text-muted: #6e6e6e;
+    
+    /* Widget Styling */
+    --sd-border-radius: 4px;
+    --sd-widget-border: 1px solid #3e3e3e;
+    --sd-grid-gap: 8px;
+    
+    /* Fonts */
+    --sd-font-mono: 'Consolas', 'Courier New', monospace;
+    --sd-font-ui: 'Segoe UI', 'Inter', -apple-system, sans-serif;
+}
 
-    --warn: #ff7900;
-    --error: #a6192e;
+/* ================================================
+   Base Reset & Layout
+   ================================================ */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html, body {
+    height: 100vh;
     overflow: hidden;
+    font-family: var(--sd-font-ui);
+    font-size: 14px;
+    background: var(--sd-bg-primary);
+    color: var(--sd-text-primary);
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
     height: 100vh;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-
-    font-family: Inter;
+a {
+    color: var(--sd-accent-light);
+    text-decoration: none;
 }
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ================================================
+   Top Toolbar (SmartDashboard Style)
+   ================================================ */
 
 .navbar {
     display: flex;
-    justify-items: center;
+    align-items: center;
     justify-content: center;
-
-    width: 40%;
-    margin-left: 30%;
-    margin-bottom: 16px;
-    height: 32px;
-
-    border-left: 4px solid #333;
-    border-bottom: 4px solid #333;
-    border-right: 4px solid #333;
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
-
-    background: var(--dark-color);
-
+    gap: 4px;
+    height: 36px;
+    padding: 0 12px;
+    background: linear-gradient(180deg, #3c3c3c 0%, #2d2d2d 100%);
+    border-bottom: 1px solid #1a1a1a;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+    
+    /* Reset original styles */
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    border: none;
     scale: 1;
-    transition: 250ms;
 }
 
 .navbar:hover {
-    box-shadow: 
-        0 0 10px #0264dd,  /* Inner glow */
-        0 0 20px #0264dd,  /* Medium glow */
-        0 0 40px #0264dd;  /* Outer glow */
-
-    scale: 1.025;
-    transition: 250ms;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    scale: 1;
 }
 
 .link-button {
-    padding: 4px;
-    margin-right: 16px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--sd-text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
     text-decoration: none;
-
     scale: 1;
-    transition: 250ms;
-}
-
-.link-button:last-child {
-    margin-right: 0px;
 }
 
 .link-button:hover {
-    scale: 1.025;
-    transition: 250ms;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    scale: 1;
 }
 
-body {
-    background: var(--background);
-    color: var(--light-color);
+.link-button:active {
+    background: rgba(255, 255, 255, 0.12);
 }
 
-a {
-    color: var(--light-color);
+.link-button.active {
+    background: var(--sd-accent);
+    border-color: var(--sd-accent);
 }
+
+/* ================================================
+   Connection Status Indicator
+   ================================================ */
 
 #connection-status {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-
-    font-weight: bold;
+    position: fixed;
+    top: 8px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--sd-bg-secondary);
+    border: var(--sd-widget-border);
+    border-radius: var(--sd-border-radius);
+    font-family: var(--sd-font-mono);
+    font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.9rem;
-    text-align: center;
+    letter-spacing: 0.5px;
+    z-index: 1000;
+}
 
-    padding: 8px 16px;
+#connection-status::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
 }
 
 .status-connected {
-    color: #4CAF50;
+    color: var(--sd-connected);
+}
+
+.status-connected::before {
+    background: var(--sd-connected);
+    box-shadow: 0 0 8px var(--sd-connected);
 }
 
 .status-disconnected {
-    color: #f44336;
+    color: var(--sd-disconnected);
 }
+
+.status-disconnected::before {
+    background: var(--sd-disconnected);
+    box-shadow: 0 0 8px var(--sd-disconnected);
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ================================================
+   Widget Grid Container
+   ================================================ */
 
 #robot-data-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--sd-grid-gap);
+    padding: var(--sd-grid-gap);
+    overflow-y: auto;
+    flex: 1;
+    align-content: start;
 }
 
+/* ================================================
+   Widget Cards (SmartDashboard Style)
+   ================================================ */
+
 .category-card {
-    background-color: #2d2d2d;
-    border-radius: 8px;
-    aspect-ratio: 1 / 1;
-    height: auto;
+    display: flex;
+    flex-direction: column;
+    background: var(--sd-bg-widget);
+    border: var(--sd-widget-border);
+    border-radius: var(--sd-border-radius);
     overflow: hidden;
-    max-width: 50%;
+    max-width: 100%;
+    transition: box-shadow 0.2s ease;
+}
+
+.category-card:hover {
+    box-shadow: 0 0 0 1px var(--sd-accent);
 }
 
 .card-header {
-    background: linear-gradient(to right, #0132bb, var(--accent-color));
-    color: white;
-    padding: 15px 20px;
-    font-weight: bold;
-    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, var(--sd-header-gradient-end) 0%, var(--sd-header-gradient-start) 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    font-size: 13px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    color: white;
+    cursor: move;
+    user-select: none;
+}
+
+.card-header::before {
+    content: '⋮⋮';
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 2px;
 }
 
 .card-content {
-    padding: 20px;
-    max-height: 400px;
-    overflow-y: hidden;
+    padding: 8px;
+    flex: 1;
+    overflow: auto;
 }
 
-.card-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.card-content::-webkit-scrollbar-track {
-    background: #3d3d3d;
-}
-
-.card-content::-webkit-scrollbar-thumb {
-    background: #667eea;
-    border-radius: 4px;
-}
+/* ================================================
+   Data Subsections
+   ================================================ */
 
 .data-subsection {
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #3d3d3d;
-    border-radius: 6px;
-    border-left: 3px solid #667eea;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: var(--sd-bg-tertiary);
+    border-radius: var(--sd-border-radius);
+    border-left: 3px solid var(--sd-accent);
+}
+
+.data-subsection:last-child {
+    margin-bottom: 0;
 }
 
 .subsection-header {
-    font-weight: 600;
-    color: #64B5F6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin-bottom: 8px;
-    font-size: 1.1em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sd-accent-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .subsection-content {
-    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
+
+/* ================================================
+   Data Rows
+   ================================================ */
 
 .data-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
-    margin: 4px 0;
-    background-color: #4d4d4d;
-    border-radius: 4px;
-    transition: all 0.2s;
+    padding: 6px 10px;
+    background: var(--sd-bg-secondary);
+    border-radius: 3px;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    margin: 0;
 }
 
 .data-row:hover {
-    background-color: #5d5d5d;
+    background: #363636;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .data-label {
+    font-size: 12px;
     font-weight: 500;
-    color: #81C784;
+    color: var(--sd-text-secondary);
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .data-value {
-    font-family: monospace;
-    padding: 4px 8px;
+    font-family: var(--sd-font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 3px;
-    background-color: #3d3d3d;
     text-align: right;
-    font-size: 12pt;
-    font-weight: bolder;
+    min-width: 60px;
 }
 
+/* Data Type Styling */
 .data-value[data-type="number"] {
-    color: #FFD54F;
+    color: var(--sd-number);
 }
 
 .data-value[data-type="boolean"] {
-    color: #81C784;
+    min-width: auto;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-value[data-type="boolean"][data-value="true"] {
+    background: var(--sd-boolean-true);
+    color: #1e1e1e;
+}
+
+.data-value[data-type="boolean"][data-value="false"] {
+    background: var(--sd-boolean-false);
+    color: #1e1e1e;
 }
 
 .data-value[data-type="string"] {
-    color: #E1BEE7;
+    color: var(--sd-string);
 }
 
-.no-data {
-    text-align: center;
-    padding: 40px;
-    color: #999;
-    font-style: italic;
-    grid-column: 1 / -1;
+.data-value[data-type="array"] {
+    color: var(--sd-array);
+    font-size: 11px;
 }
+
+/* ================================================
+   Boolean Indicator Widget (Light Style)
+   ================================================ */
+
+.boolean-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--sd-bg-secondary);
+    border-radius: var(--sd-border-radius);
+}
+
+.boolean-light {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    transition: all 0.2s ease;
+}
+
+.boolean-light.on {
+    background: var(--sd-connected);
+    box-shadow: 
+        0 0 10px var(--sd-connected),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.3);
+    border-color: #6eff6e;
+}
+
+.boolean-light.off {
+    background: #4a4a4a;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ================================================
+   Number Display Widget (Gauge Style)
+   ================================================ */
+
+.number-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    background: linear-gradient(180deg, #2a2a2a 0%, #222 100%);
+    border-radius: var(--sd-border-radius);
+    border: 1px solid #3e3e3e;
+}
+
+.number-display-value {
+    font-family: var(--sd-font-mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--sd-number);
+    text-shadow: 0 0 10px rgba(181, 206, 168, 0.3);
+    line-height: 1;
+}
+
+.number-display-label {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--sd-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.number-display-unit {
+    font-size: 14px;
+    color: var(--sd-text-secondary);
+    margin-left: 4px;
+}
+
+/* ================================================
+   Progress Bar Widget
+   ================================================ */
+
+.progress-widget {
+    padding: 12px;
+    background: var(--sd-bg-secondary);
+    border-radius: var(--sd-border-radius);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.progress-label {
+    color: var(--sd-text-secondary);
+}
+
+.progress-value {
+    font-family: var(--sd-font-mono);
+    color: var(--sd-number);
+    font-weight: 600;
+}
+
+.progress-bar {
+    height: 16px;
+    background: var(--sd-bg-primary);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #3e3e3e;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(180deg, var(--sd-accent-light) 0%, var(--sd-accent) 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 122, 204, 0.5);
+}
+
+.progress-fill.warning {
+    background: linear-gradient(180deg, #ffb74d 0%, var(--sd-warning) 100%);
+    box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+}
+
+.progress-fill.danger {
+    background: linear-gradient(180deg, #ef5350 0%, var(--sd-error) 100%);
+    box-shadow: 0 0 8px rgba(229, 57, 53, 0.5);
+}
+
+/* ================================================
+   Field2D Widget
+   ================================================ */
 
 .field2d-card {
-    grid-column: span 2; /* Make Field2d cards wider */
+    grid-column: span 2;
 }
 
 .field2d-content {
-    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #1e1e1e;
+    padding: 12px;
+    background: #0a0a0a;
+    min-height: 200px;
 }
 
 .field2d-canvas {
-    border: 2px solid #4CAF50;
-    border-radius: 4px;
+    border: 2px solid var(--sd-accent);
+    border-radius: var(--sd-border-radius);
+    background: #111;
     max-width: 100%;
     height: auto;
+    box-shadow: 
+        inset 0 0 20px rgba(0, 122, 204, 0.1),
+        0 0 10px rgba(0, 122, 204, 0.2);
 }
 
+/* ================================================
+   Graph Widget
+   ================================================ */
+
+.graph-widget {
+    grid-column: span 2;
+}
+
+.graph-content {
+    padding: 12px;
+    background: #0f0f0f;
+    min-height: 150px;
+}
+
+.graph-canvas {
+    width: 100%;
+    height: 120px;
+    background: 
+        linear-gradient(rgba(0, 122, 204, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 122, 204, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border-radius: var(--sd-border-radius);
+}
+
+/* ================================================
+   Chooser Widget (Sendable Chooser Style)
+   ================================================ */
+
+.chooser-widget {
+    padding: 8px;
+}
+
+.chooser-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.chooser-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--sd-bg-tertiary);
+    border: 1px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chooser-option:hover {
+    background: #454545;
+    border-color: var(--sd-accent);
+}
+
+.chooser-option.selected {
+    background: var(--sd-accent);
+    color: white;
+}
+
+.chooser-option::before {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    flex-shrink: 0;
+}
+
+.chooser-option.selected::before {
+    background: white;
+    border-color: white;
+}
+
+/* ================================================
+   Camera Feed Widget
+   ================================================ */
+
+.camera-widget {
+    grid-column: span 2;
+}
+
+.camera-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    min-height: 240px;
+    position: relative;
+}
+
+.camera-feed {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.camera-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 3px;
+    font-family: var(--sd-font-mono);
+    font-size: 11px;
+    color: var(--sd-connected);
+}
+
+.camera-no-signal {
+    color: var(--sd-text-muted);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ================================================
+   Console / Log Widget
+   ================================================ */
+
+.console-widget {
+    grid-column: span 2;
+}
+
+.console-content {
+    padding: 8px;
+    background: #0a0a0a;
+    font-family: var(--sd-font-mono);
+    font-size: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.console-line {
+    padding: 2px 8px;
+    border-left: 3px solid transparent;
+}
+
+.console-line:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.console-line.info {
+    border-left-color: var(--sd-accent);
+    color: var(--sd-text-primary);
+}
+
+.console-line.warning {
+    border-left-color: var(--sd-warning);
+    color: var(--sd-warning);
+}
+
+.console-line.error {
+    border-left-color: var(--sd-error);
+    color: var(--sd-error);
+}
+
+.console-timestamp {
+    color: var(--sd-text-muted);
+    margin-right: 8px;
+}
+
+/* ================================================
+   No Data State
+   ================================================ */
+
+.no-data {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 40px;
+    color: var(--sd-text-muted);
+    text-align: center;
+}
+
+.no-data::before {
+    content: '⚠';
+    font-size: 32px;
+    opacity: 0.5;
+}
+
+.no-data-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--sd-text-secondary);
+}
+
+.no-data-subtitle {
+    font-size: 13px;
+}
+
+/* ================================================
+   Alliance Color Variants
+   ================================================ */
+
+.alliance-red .card-header {
+    background: linear-gradient(180deg, #c62828 0%, #8e0000 100%);
+}
+
+.alliance-red .data-subsection {
+    border-left-color: #e53935;
+}
+
+.alliance-blue .card-header {
+    background: linear-gradient(180deg, var(--sd-header-gradient-end) 0%, var(--sd-header-gradient-start) 100%);
+}
+
+/* ================================================
+   Responsive Breakpoints
+   ================================================ */
+
 @media (max-width: 1200px) {
-    .field2d-card {
+    .field2d-card,
+    .graph-widget,
+    .camera-widget,
+    .console-widget {
         grid-column: span 1;
     }
+}
+
+@media (max-width: 768px) {
+    #robot-data-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #connection-status {
+        top: auto;
+        bottom: 8px;
+        right: 8px;
+    }
+}
+
+/* ================================================
+   Scrollbar Styling
+   ================================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--sd-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a;
+}
+
+/* ================================================
+   Utility Classes
+   ================================================ */
+
+.widget-span-2 {
+    grid-column: span 2;
+}
+
+.widget-span-3 {
+    grid-column: span 3;
+}
+
+.widget-tall {
+    grid-row: span 2;
+}
+
+.text-mono {
+    font-family: var(--sd-font-mono);
+}
+
+.text-connected {
+    color: var(--sd-connected);
+}
+
+.text-disconnected {
+    color: var(--sd-disconnected);
+}
+
+.text-warning {
+    color: var(--sd-warning);
+}
+
+.text-error {
+    color: var(--sd-error);
 }

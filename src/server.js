@@ -9,26 +9,12 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT;
 const TEAM = process.env.TEAM;
-const TEAM_IP = process.env.RIO;
 const LOCAL = '127.0.0.1';
-
-const USER = process.env.API_USER;
-const TOKEN = process.env.API_TOKEN;
 
 const args = process.argv.slice(2);
 
 app.use(cors());
 app.use(express.json());
-
-var API_HEADERS = new Headers();
-API_HEADERS.append("Authorization", `Basic ${USER} ${TOKEN}`);
-API_HEADERS.append("If-Modified-Since", "");
-
-var REQ_OPTIONS = {
-    method: 'GET',
-    headers: API_HEADERS,
-    redirect: 'follow'
-};
 
 // Create NetworkTables client
 let nt;
@@ -79,7 +65,7 @@ nt.addRobotConnectionListener((connected) => {
     if (connected) {
         console.log('✓ Connected to robot!'.green.bold);
     } else {
-        console.log('✗ Disconnected from robot'.red);
+        console.log('✗ Not Connected to robot'.red);
     }
 });
 
@@ -125,7 +111,6 @@ poseTopic.subscribe((value) => {
             y: value[1],
             rotation: value[2]
         };
-        console.log(`✓ Pose: x=${value[0].toFixed(2)}, y=${value[1].toFixed(2)}, θ=${(value[2] * 180 / Math.PI).toFixed(1)}°`.green);
     }
 });
 
@@ -138,7 +123,6 @@ speedsTopic.subscribe((value) => {
             vy: value[1],
             omega: value[2]
         };
-        console.log(`✓ Speeds: vx=${value[0].toFixed(2)}, vy=${value[1].toFixed(2)}, ω=${value[2].toFixed(2)}`.blue);
     }
 });
 
@@ -180,6 +164,24 @@ function getIP(type) {
                 }
             }
             break;
+        case "ipv4":
+            for (const name of Object.keys(interfaces)) {
+                for (const iface of interfaces[name]) {
+                    if (iface.family === 'IPv4' && !iface.internal) {
+                        return iface.address;
+                    }
+                }
+            }
+            break;
+        case "ipv6":
+            for (const name of Object.keys(interfaces)) {
+                for (const iface of interfaces[name]) {
+                    if (iface.family === 'IPv6' && !iface.internal) {
+                        return iface.address;
+                    }
+                }
+            }
+            break;
         default:
             console.log("Could not fetch IP address - invalid IP Version!".yellow);
     }
@@ -203,18 +205,6 @@ app.get('/api/debug/topics', (req, res) => {
         connected: nt.isRobotConnected() || isConnected,
         cache: dataCache,
         cacheKeys: Object.keys(dataCache)
-    });
-});
-
-app.get('/api/frc-events/events', (req, res) => {
-    const eventData = fetch("https://frc-api.firstinspires.org/v3.0/2025/events?districtCode=FIM", REQ_OPTIONS)
-                        .then(response => response.text())
-                        .then(result => console.log(result))
-                        .catch(error => console.log("Error!".red, `${error}`.red));
-    if (eventData) res.status(200).json(eventData);
-    else res.status(500).json({
-        'message': "An error has occured!",
-        'code': 500
     });
 });
 
