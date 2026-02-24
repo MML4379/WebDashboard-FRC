@@ -14,17 +14,19 @@ export const FIELD_CONFIG = {
     fieldLength: 16.5354,  // 54'3"
     fieldWidth: 8.001,     // 26'3"
     
-    // Robot dimensions in meters
-    robotLength: 0.9086,   // ~35.8 inches with bumpers
-    robotWidth: 0.9086,    // robot is a square
+    // Robot dimensions in meters (visual size, not actual)
+    robotLength: 0.8,
+    robotWidth: 0.8,
+    
+    // Background image path
+    backgroundImage: '/assets/2026field.png',
     
     // Colors
     colors: {
-        background: '#1e1e1e',
-        gridLines: 'rgba(255, 255, 255, 0.1)',
+        background: '#1e1e1e',  // Fallback if image fails to load
+        gridLines: 'rgba(255, 255, 255, 0.15)',
         border: '#4CAF50',
-        robotBlue: '#1565C0',
-        robotRed: '#C62828',
+        robot: '#1565C0',
         robotOutline: '#42A5F5',
         robotDirection: '#FFD600',
         trajectory: '#64B5F6',

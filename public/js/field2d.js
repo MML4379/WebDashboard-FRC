@@ -4,6 +4,38 @@
 
 import { FIELD_CONFIG } from './config.js';
 
+// Cache for loaded background image
+let backgroundImage = null;
+let imageLoadPromise = null;
+
+// ================================================
+// Image Loading
+// ================================================
+
+function loadBackgroundImage() {
+    if (imageLoadPromise) return imageLoadPromise;
+    
+    imageLoadPromise = new Promise((resolve) => {
+        const img = new Image();
+        
+        img.onload = () => {
+            backgroundImage = img;
+            console.log('[Field2D] Background image loaded');
+            resolve(img);
+        };
+        
+        img.onerror = () => {
+            console.warn('[Field2D] Failed to load background image, using fallback');
+            backgroundImage = null;
+            resolve(null);
+        };
+        
+        img.src = FIELD_CONFIG.backgroundImage;
+    });
+    
+    return imageLoadPromise;
+}
+
 // ================================================
 // Card Creation
 // ================================================
@@ -27,10 +59,11 @@ export function createField2dCard(categoryName, field2dData) {
     `;
     
     // Setup canvas after DOM insertion
-    setTimeout(() => {
+    setTimeout(async () => {
         const canvas = document.getElementById(cardId);
         if (canvas) {
             console.log('[Field2D] Canvas found, setting up...');
+            await loadBackgroundImage();
             setupField2dCanvas(canvas, field2dData);
         } else {
             console.error(`[Field2D] Canvas not found: ${cardId}`);
@@ -128,8 +161,7 @@ function drawField2d(canvas, data, dimensions) {
     const metersToPixels = (m) => m * scale;
     
     // Draw layers
-    drawBackground(ctx, width, height, colors);
-    drawFieldArea(ctx, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, colors);
+    drawBackground(ctx, width, height, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, colors);
     drawGridLines(ctx, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, scale, colors);
     drawFieldBorder(ctx, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, colors);
     drawAxisLabels(ctx, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, scale, colors);
@@ -148,14 +180,21 @@ function drawField2d(canvas, data, dimensions) {
 // Drawing Helpers
 // ================================================
 
-function drawBackground(ctx, width, height, colors) {
+function drawBackground(ctx, width, height, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, colors) {
+    // Fill entire canvas with fallback color
     ctx.fillStyle = colors.background;
     ctx.fillRect(0, 0, width, height);
-}
-
-function drawFieldArea(ctx, offsetX, offsetY, width, height, colors) {
-    ctx.fillStyle = '#252525';
-    ctx.fillRect(offsetX, offsetY, width, height);
+    
+    // Draw background image if loaded
+    if (backgroundImage) {
+        ctx.drawImage(
+            backgroundImage,
+            offsetX,
+            offsetY,
+            fieldPixelWidth,
+            fieldPixelHeight
+        );
+    }
 }
 
 function drawGridLines(ctx, offsetX, offsetY, width, height, scale, colors) {
@@ -225,10 +264,10 @@ function drawRobot(ctx, robot, fieldToCanvas, metersToPixels, colors) {
     
     // Shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-    ctx.fillRect(-robotLength / 2 + 2, -robotWidth / 2 + 2, robotLength, robotWidth);
+    ctx.fillRect(-robotLength / 2 + 1, -robotWidth / 2 + 1, robotLength, robotWidth);
     
     // Body
-    ctx.fillStyle = robot.alliance === 'red' ? colors.robotRed : colors.robotBlue;
+    ctx.fillStyle = colors.robot;
     ctx.fillRect(-robotLength / 2, -robotWidth / 2, robotLength, robotWidth);
     
     // Border
@@ -237,8 +276,8 @@ function drawRobot(ctx, robot, fieldToCanvas, metersToPixels, colors) {
     ctx.strokeRect(-robotLength / 2, -robotWidth / 2, robotLength, robotWidth);
     
     // Bumpers
-    const bumperWidth = 3;
-    ctx.fillStyle = robot.alliance === 'red' ? '#EF5350' : '#42A5F5';
+    const bumperWidth = 2;
+    ctx.fillStyle = colors.robotOutline;
     ctx.fillRect(-robotLength / 2 - bumperWidth, -robotWidth / 2, bumperWidth, robotWidth);
     ctx.fillRect(robotLength / 2, -robotWidth / 2, bumperWidth, robotWidth);
     ctx.fillRect(-robotLength / 2, -robotWidth / 2 - bumperWidth, robotLength, bumperWidth);
@@ -247,13 +286,13 @@ function drawRobot(ctx, robot, fieldToCanvas, metersToPixels, colors) {
     // Direction arrow
     ctx.fillStyle = colors.robotDirection;
     ctx.shadowColor = colors.robotDirection;
-    ctx.shadowBlur = 6;
+    ctx.shadowBlur = 4;
     
-    const arrowSize = Math.min(robotLength, robotWidth) * 0.35;
+    const arrowSize = Math.min(robotLength, robotWidth) * 0.4;
     ctx.beginPath();
-    ctx.moveTo(robotLength / 2 + 8, 0);
-    ctx.lineTo(robotLength / 2 - arrowSize * 0.2, -arrowSize * 0.4);
-    ctx.lineTo(robotLength / 2 - arrowSize * 0.2, arrowSize * 0.4);
+    ctx.moveTo(robotLength / 2 + 5, 0);
+    ctx.lineTo(robotLength / 2 - arrowSize * 0.2, -arrowSize * 0.35);
+    ctx.lineTo(robotLength / 2 - arrowSize * 0.2, arrowSize * 0.35);
     ctx.closePath();
     ctx.fill();
     ctx.shadowBlur = 0;
@@ -261,7 +300,7 @@ function drawRobot(ctx, robot, fieldToCanvas, metersToPixels, colors) {
     // Center crosshair
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.lineWidth = 1;
-    const crossSize = 6;
+    const crossSize = 4;
     ctx.beginPath();
     ctx.moveTo(-crossSize, 0);
     ctx.lineTo(crossSize, 0);
@@ -395,11 +434,7 @@ function parseField2dData(data) {
         if (lowerKey.includes('robot') || lowerKey === 'pose' || lowerKey === 'position') {
             const pose = parsePose(value);
             if (pose) {
-                result.robots.push({
-                    name: key,
-                    ...pose,
-                    alliance: detectAlliance(key, pose)
-                });
+                result.robots.push({ name: key, ...pose });
                 console.log(`[Field2D] Found robot "${key}":`, pose);
             }
             continue;
@@ -486,13 +521,4 @@ function parseTrajectory(value) {
     
     const points = value.map(parsePose).filter(Boolean);
     return points.length > 0 ? points : null;
-}
-
-function detectAlliance(key, pose) {
-    const lowerKey = key.toLowerCase();
-    if (lowerKey.includes('blue')) return 'blue';
-    if (lowerKey.includes('red')) return 'red';
-    
-    // Detect based on field position
-    return pose.x < FIELD_CONFIG.fieldLength / 2 ? 'blue' : 'red';
 }
