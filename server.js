@@ -147,23 +147,6 @@ function getIP(type) {
     const interfaces = os.networkInterfaces();
     switch (type) {
         case "IPv4":
-            for (const name of Object.keys(interfaces)) {
-                for (const iface of interfaces[name]) {
-                    if (iface.family === 'IPv4' && !iface.internal) {
-                        return iface.address;
-                    }
-                }
-            }
-            break;
-        case "IPv6":
-            for (const name of Object.keys(interfaces)) {
-                for (const iface of interfaces[name]) {
-                    if (iface.family === 'IPv6' && !iface.internal) {
-                        return iface.address;
-                    }
-                }
-            }
-            break;
         case "ipv4":
             for (const name of Object.keys(interfaces)) {
                 for (const iface of interfaces[name]) {
@@ -173,6 +156,7 @@ function getIP(type) {
                 }
             }
             break;
+        case "IPv6":
         case "ipv6":
             for (const name of Object.keys(interfaces)) {
                 for (const iface of interfaces[name]) {
@@ -196,6 +180,56 @@ app.get('/api/robot-data', (req, res) => {
         console.error('Error:', error);
         res.status(500).json({ 
             error: error.message
+        });
+    }
+});
+
+// Handle SendableChooser selections
+app.post('/api/chooser', (req, res) => {
+    try {
+        const { key, value } = req.body;
+        
+        if (!key || value === undefined) {
+            return res.status(400).json({ 
+                error: 'Missing required fields: key and value' 
+            });
+        }
+        
+        // Build the NT path for the selected value
+        // SendableChooser uses /selected for dashboard-selected value
+        const ntPath = key.startsWith('/') ? `${key}/selected` : `/SmartDashboard/${key}/selected`;
+        
+        console.log(`[Chooser] Setting ${ntPath} = "${value}"`.cyan);
+        
+        // Create topic and publish the selection
+        const topic = nt.createTopic(ntPath, NetworkTablesTypeInfos.kString);
+        topic.publish();
+        topic.setValue(value);
+        
+        // Also update local cache to reflect the change
+        const keyParts = key.replace(/^\/SmartDashboard\//, '').split('/');
+        let current = dataCache;
+        
+        for (let i = 0; i < keyParts.length; i++) {
+            if (!current[keyParts[i]]) {
+                current[keyParts[i]] = {};
+            }
+            if (i === keyParts.length - 1) {
+                current[keyParts[i]].selected = value;
+            } else {
+                current = current[keyParts[i]];
+            }
+        }
+        
+        res.status(200).json({ 
+            success: true, 
+            key: ntPath, 
+            value: value 
+        });
+    } catch (error) {
+        console.error('[Chooser] Error:'.red, error.message);
+        res.status(500).json({ 
+            error: error.message 
         });
     }
 });

@@ -153,9 +153,12 @@ function drawField2d(canvas, data, dimensions) {
     const offsetY = (height - fieldPixelHeight) / 2;
     
     // Coordinate conversion helpers
+    const flipX = FIELD_CONFIG.flipX || false;
+    const flipY = FIELD_CONFIG.flipY || false;
+    
     const fieldToCanvas = (x, y) => ({
-        x: offsetX + x * scale,
-        y: offsetY + (fieldWidth - y) * scale  // Flip Y axis
+        x: offsetX + (flipX ? (fieldLength - x) : x) * scale,
+        y: offsetY + (flipY ? (fieldWidth - y) : y) * scale
     });
     
     const metersToPixels = (m) => m * scale;
@@ -185,7 +188,7 @@ function drawBackground(ctx, width, height, offsetX, offsetY, fieldPixelWidth, f
     ctx.fillStyle = colors.background;
     ctx.fillRect(0, 0, width, height);
     
-    // Draw background image if loaded
+    // Draw background image if loaded (no flip - adjust coordinates instead)
     if (backgroundImage) {
         ctx.drawImage(
             backgroundImage,
@@ -229,7 +232,7 @@ function drawFieldBorder(ctx, offsetX, offsetY, width, height, colors) {
 }
 
 function drawAxisLabels(ctx, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight, scale, colors) {
-    const { fieldLength, fieldWidth } = FIELD_CONFIG;
+    const { fieldLength, fieldWidth, flipX, flipY } = FIELD_CONFIG;
     
     ctx.font = '10px Consolas, monospace';
     ctx.fillStyle = colors.textMuted;
@@ -237,14 +240,14 @@ function drawAxisLabels(ctx, offsetX, offsetY, fieldPixelWidth, fieldPixelHeight
     // X-axis labels (bottom)
     ctx.textAlign = 'center';
     for (let x = 0; x <= fieldLength; x += 2) {
-        const px = offsetX + x * scale;
+        const px = offsetX + (flipX ? (fieldLength - x) : x) * scale;
         ctx.fillText(`${x}`, px, offsetY + fieldPixelHeight + 14);
     }
     
     // Y-axis labels (left)
     ctx.textAlign = 'right';
     for (let y = 0; y <= fieldWidth; y += 2) {
-        const py = offsetY + (fieldWidth - y) * scale;
+        const py = offsetY + (flipY ? (fieldWidth - y) : y) * scale;
         ctx.fillText(`${y}`, offsetX - 6, py + 4);
     }
 }
@@ -258,9 +261,17 @@ function drawRobot(ctx, robot, fieldToCanvas, metersToPixels, colors) {
     const robotWidth = metersToPixels(FIELD_CONFIG.robotWidth);
     const robotLength = metersToPixels(FIELD_CONFIG.robotLength);
     
+    const flipX = FIELD_CONFIG.flipX || false;
+    const flipY = FIELD_CONFIG.flipY || false;
+    const rotationOffset = FIELD_CONFIG.rotationOffset || 0;
+    
+    // Determine rotation sign based on axis flips
+    // Flipping one axis negates rotation, flipping both cancels out
+    const rotationSign = (flipX !== flipY) ? -1 : 1;
+    
     ctx.save();
     ctx.translate(pos.x, pos.y);
-    ctx.rotate(-robot.rotation);
+    ctx.rotate(rotationSign * robot.rotation + rotationOffset);
     
     // Shadow
     ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';

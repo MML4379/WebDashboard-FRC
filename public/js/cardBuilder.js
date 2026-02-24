@@ -12,6 +12,24 @@ import {
 } from './widgets.js';
 
 /**
+ * Check if data represents a SendableChooser
+ */
+function isChooser(data) {
+    if (!data || typeof data !== 'object') return false;
+    return data['.type'] === 'String Chooser' || 
+           (data.options && Array.isArray(data.options));
+}
+
+/**
+ * Check if value is a primitive (not an object/array)
+ */
+function isPrimitive(value) {
+    return value === null || 
+           typeof value !== 'object' || 
+           Array.isArray(value);
+}
+
+/**
  * Create a category card with data
  */
 export function createCategoryCard(categoryName, categoryData) {
@@ -24,15 +42,44 @@ export function createCategoryCard(categoryName, categoryData) {
     `;
     
     const content = card.querySelector('.card-content');
-    renderDataInCard(categoryData, content);
+    
+    // Check if this entire category is a chooser
+    if (isChooser(categoryData)) {
+        content.appendChild(createChooserWidget(categoryName, categoryData, categoryName));
+    } 
+    // Handle primitive values (string, number, boolean) at category level
+    else if (isPrimitive(categoryData)) {
+        const widgetType = detectWidgetType(categoryName, categoryData);
+        
+        switch (widgetType) {
+            case 'boolean-indicator':
+                content.appendChild(createBooleanIndicator(categoryName, categoryData));
+                break;
+            case 'progress-bar':
+                content.appendChild(createProgressBar(categoryName, categoryData));
+                break;
+            case 'number-gauge':
+                content.appendChild(createNumberGauge(categoryName, categoryData));
+                break;
+            default:
+                content.appendChild(createDataRow(categoryName, categoryData));
+        }
+    } 
+    else {
+        renderDataInCard(categoryData, content, 0, categoryName);
+    }
     
     return card;
 }
 
 /**
  * Render data inside a card, organizing by widget type
+ * @param {object} data - Data to render
+ * @param {HTMLElement} parentElement - Container element
+ * @param {number} depth - Nesting depth for indentation
+ * @param {string} keyPath - NetworkTables key path (e.g., "SmartDashboard/Auto")
  */
-export function renderDataInCard(data, parentElement, depth = 0) {
+export function renderDataInCard(data, parentElement, depth = 0, keyPath = '') {
     const categorized = categorizeData(data);
     
     // Render gauges in a grid
@@ -70,7 +117,7 @@ export function renderDataInCard(data, parentElement, depth = 0) {
     
     // Render subsections
     categorized.subsections.forEach(({ key, value }) => {
-        renderSubsection(key, value, parentElement, depth);
+        renderSubsection(key, value, parentElement, depth, keyPath);
     });
 }
 
@@ -147,13 +194,16 @@ function createIndicatorGrid() {
 /**
  * Render a collapsible subsection
  */
-function renderSubsection(key, value, parentElement, depth) {
+function renderSubsection(key, value, parentElement, depth, keyPath = '') {
+    // Build the full key path for this subsection
+    const fullKeyPath = keyPath ? `${keyPath}/${key}` : key;
+    
     // Handle chooser widgets specially
-    if (value['.type'] === 'String Chooser' || value['options']) {
+    if (isChooser(value)) {
         const wrapper = document.createElement('div');
         wrapper.className = 'data-subsection';
         wrapper.innerHTML = `<div class="subsection-header">${key}</div>`;
-        wrapper.appendChild(createChooserWidget(key, value));
+        wrapper.appendChild(createChooserWidget(key, value, fullKeyPath));
         parentElement.appendChild(wrapper);
         return;
     }
@@ -174,8 +224,8 @@ function renderSubsection(key, value, parentElement, depth) {
     const content = subsection.querySelector('.subsection-content');
     parentElement.appendChild(subsection);
     
-    // Recursively render content
-    renderDataInCard(value, content, depth + 1);
+    // Recursively render content with updated key path
+    renderDataInCard(value, content, depth + 1, fullKeyPath);
     
     // Add collapse/expand functionality
     const header = subsection.querySelector('.subsection-header');

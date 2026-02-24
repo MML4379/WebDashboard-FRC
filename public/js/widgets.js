@@ -76,17 +76,22 @@ export function createProgressBar(key, value) {
 }
 
 /**
- * Create a chooser/selector widget
+ * Create a chooser/selector widget (interactive)
  */
-export function createChooserWidget(key, data) {
+export function createChooserWidget(key, data, ntKey = null) {
     const widget = document.createElement('div');
     widget.className = 'chooser-widget';
     
     const options = data.options || Object.keys(data).filter(k => !k.startsWith('.'));
     const selected = data.selected || data.active || data.default || '';
     
+    // Build the full NT key for this chooser
+    const chooserKey = ntKey || key;
+    
     const optionsHtml = options.map(opt => `
-        <div class="chooser-option ${opt === selected ? 'selected' : ''}" data-value="${opt}">
+        <div class="chooser-option ${opt === selected ? 'selected' : ''}" 
+             data-value="${opt}" 
+             data-chooser-key="${chooserKey}">
             ${opt}
         </div>
     `).join('');
@@ -97,7 +102,64 @@ export function createChooserWidget(key, data) {
         </div>
     `;
     
+    // Add click handlers
+    widget.querySelectorAll('.chooser-option').forEach(option => {
+        option.addEventListener('click', async (e) => {
+            const target = e.currentTarget;
+            const value = target.dataset.value;
+            const key = target.dataset.chooserKey;
+            
+            // Don't re-select already selected option
+            if (target.classList.contains('selected')) return;
+            
+            // Store previous selection for rollback
+            const previousSelected = widget.querySelector('.chooser-option.selected');
+            
+            // Optimistically update UI
+            widget.querySelectorAll('.chooser-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            target.classList.add('selected', 'loading');
+            
+            // Send to robot
+            try {
+                await sendChooserSelection(key, value);
+                target.classList.remove('loading');
+                console.log(`[Chooser] Selection confirmed: ${key} = ${value}`);
+            } catch (error) {
+                console.error('[Chooser] Failed to send selection:', error);
+                
+                // Rollback on failure
+                target.classList.remove('selected', 'loading');
+                if (previousSelected) {
+                    previousSelected.classList.add('selected');
+                }
+            }
+        });
+    });
+    
     return widget;
+}
+
+/**
+ * Send chooser selection to the robot
+ */
+async function sendChooserSelection(key, value) {
+    console.log(`[Chooser] Sending selection: ${key} = ${value}`);
+    
+    const response = await fetch('/api/chooser', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ key, value }),
+    });
+    
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return response.json();
 }
 
 /**

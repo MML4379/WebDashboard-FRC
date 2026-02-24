@@ -4,7 +4,7 @@
 
 export const WIDGET_CONFIG = {
     maxGraphHistory: 100,
-    progressBarKeys: ['percent', 'battery', 'pressure', 'capacity', 'level', 'progress'],
+    progressBarKeys: ['percent', 'battery', 'pressure', 'capacity', 'level', 'progress', '%'],
     booleanDisplayKeys: ['enabled', 'active', 'ready', 'aligned', 'detected', 'connected', 'limit', 'switch'],
     gaugeKeys: ['speed', 'velocity', 'angle', 'position', 'distance', 'voltage', 'current', 'temperature'],
 };
@@ -15,12 +15,19 @@ export const FIELD_CONFIG = {
     fieldWidth: 8.001,     // 26'3"
     
     // Robot dimensions in meters (visual size, not actual)
-    robotLength: 0.8,
-    robotWidth: 0.8,
+    robotLength: 0.5,
+    robotWidth: 0.5,
     
-    // Background image path
+    // Rotation offset in radians (adjust if robot orientation doesn't match)
+    // Try: 0, Math.PI/2, Math.PI, or -Math.PI/2
+    rotationOffset: 0,
+    
+    // Background image path (set to your field image)
     backgroundImage: '/assets/2026field.png',
     
+    flipX: false,
+    flipY: true,
+
     // Colors
     colors: {
         background: '#1e1e1e',  // Fallback if image fails to load
