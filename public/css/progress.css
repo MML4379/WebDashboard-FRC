@@ -1,0 +1,52 @@
+/* ================================================
+   Progress Bar Widget
+   ================================================ */
+
+.progress-widget {
+    padding: 12px;
+    background: var(--driveboard-bg-secondary);
+    border-radius: var(--driveboard-border-radius);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.progress-label {
+    color: var(--driveboard-text-secondary);
+}
+
+.progress-value {
+    font-family: var(--driveboard-font-mono);
+    color: var(--driveboard-number);
+    font-weight: 600;
+}
+
+.progress-bar {
+    height: 16px;
+    background: var(--driveboard-bg-primary);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid #3e3e3e;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(180deg, var(--driveboard-accent-light) 0%, var(--driveboard-accent) 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 8px rgba(0, 122, 204, 0.5);
+}
+
+.progress-fill.warning {
+    background: linear-gradient(180deg, #ffb74d 0%, var(--driveboard-warning) 100%);
+    box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+}
+
+.progress-fill.danger {
+    background: linear-gradient(180deg, #ef5350 0%, var(--driveboard-error) 100%);
+    box-shadow: 0 0 8px rgba(229, 57, 53, 0.5);
+}

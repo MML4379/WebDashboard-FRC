@@ -1,0 +1,60 @@
+/* ================================================
+   Top Toolbar
+   ================================================ */
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 36px;
+    padding: 0 12px;
+    background: linear-gradient(180deg, #3c3c3c 0%, #2d2d2d 100%);
+    border-bottom: 1px solid #1a1a1a;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+    
+    /* Reset original styles */
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    scale: 1;
+}
+
+.navbar:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    scale: 1;
+}
+
+.link-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    margin: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--driveboard-text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    scale: 1;
+}
+
+.link-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    scale: 1;
+}
+
+.link-button:active {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.link-button.active {
+    background: var(--driveboard-accent);
+    border-color: var(--driveboard-accent);
+}

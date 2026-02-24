@@ -1,0 +1,42 @@
+:root {
+    /* Colors */
+    --driveboard-bg-primary: #1e1e1e;
+    --driveboard-bg-secondary: #2d2d2d;
+    --driveboard-bg-tertiary: #3a3a3a;
+    --driveboard-bg-widget: #252526;
+    
+    /* Accent Colors */
+    --driveboard-accent: #007acc;
+    --driveboard-accent-light: #3399ff;
+    --driveboard-header-gradient-start: #004080;
+    --driveboard-header-gradient-end: #0066cc;
+    
+    /* Status Colors */
+    --driveboard-enabled: #4ec9b0;
+    --driveboard-disabled: #6e6e6e;
+    --driveboard-connected: #4CAF50;
+    --driveboard-disconnected: #f44336;
+    --driveboard-warning: #ff9800;
+    --driveboard-error: #e53935;
+    
+    /* Data Type Colors */
+    --driveboard-number: #b5cea8;
+    --driveboard-boolean-true: #4ec9b0;
+    --driveboard-boolean-false: #ce9178;
+    --driveboard-string: #ce9178;
+    --driveboard-array: #dcdcaa;
+    
+    /* Text Colors */
+    --driveboard-text-primary: #d4d4d4;
+    --driveboard-text-secondary: #9e9e9e;
+    --driveboard-text-muted: #6e6e6e;
+    
+    /* Widget Styling */
+    --driveboard-border-radius: 4px;
+    --driveboard-widget-border: 1px solid #3e3e3e;
+    --driveboard-grid-gap: 8px;
+    
+    /* Fonts */
+    --driveboard-font-mono: 'Consolas', 'Courier New', monospace;
+    --driveboard-font-ui: 'Segoe UI', 'Inter', -apple-system, sans-serif;
+}

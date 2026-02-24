@@ -1,0 +1,36 @@
+/* ================================================
+   Number Display Widget (Gauge Style)
+   ================================================ */
+
+.number-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    background: linear-gradient(180deg, #2a2a2a 0%, #222 100%);
+    border-radius: var(--driveboard-border-radius);
+    border: 1px solid #3e3e3e;
+}
+
+.number-display-value {
+    font-family: var(--driveboard-font-mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--driveboard-number);
+    text-shadow: 0 0 10px rgba(181, 206, 168, 0.3);
+    line-height: 1;
+}
+
+.number-display-label {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--driveboard-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.number-display-unit {
+    font-size: 14px;
+    color: var(--driveboard-text-secondary);
+    margin-left: 4px;
+}

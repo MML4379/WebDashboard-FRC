@@ -1,0 +1,61 @@
+/* ================================================
+   Widget Grid Container
+   ================================================ */
+
+#robot-data-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--driveboard-grid-gap);
+    padding: var(--driveboard-grid-gap);
+    overflow-y: auto;
+    flex: 1;
+    align-content: start;
+}
+
+/* ================================================
+   Widget Cards
+   ================================================ */
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--driveboard-bg-widget);
+    border: var(--driveboard-widget-border);
+    border-radius: var(--driveboard-border-radius);
+    overflow: hidden;
+    max-width: 100%;
+    transition: box-shadow 0.2s ease;
+}
+
+.category-card:hover {
+    box-shadow: 0 0 0 1px var(--driveboard-accent);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, var(--driveboard-header-gradient-end) 0%, var(--driveboard-header-gradient-start) 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+    cursor: move;
+    user-select: none;
+}
+
+.card-header::before {
+    content: '⋮⋮';
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 2px;
+}
+
+.card-content {
+    padding: 8px;
+    flex: 1;
+    overflow: auto;
+}

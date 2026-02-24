@@ -1,0 +1,27 @@
+/* ================================================
+   Field2D Widget
+   ================================================ */
+
+.field2d-card {
+    grid-column: span 2;
+}
+
+.field2d-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    background: #0a0a0a;
+    min-height: 200px;
+}
+
+.field2d-canvas {
+    border: 2px solid var(--driveboard-accent);
+    border-radius: var(--driveboard-border-radius);
+    background: #111;
+    max-width: 100%;
+    height: auto;
+    box-shadow: 
+        inset 0 0 20px rgba(0, 122, 204, 0.1),
+        0 0 10px rgba(0, 122, 204, 0.2);
+}

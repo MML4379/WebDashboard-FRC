@@ -1,0 +1,89 @@
+/* ================================================
+   Boolean Indicator Widget (Light Style)
+   ================================================ */
+
+.boolean-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--driveboard-bg-secondary);
+    border-radius: var(--driveboard-border-radius);
+}
+
+.boolean-light {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    transition: all 0.2s ease;
+}
+
+.boolean-light.on {
+    background: var(--driveboard-connected);
+    box-shadow: 
+        0 0 10px var(--driveboard-connected),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.3);
+    border-color: #6eff6e;
+}
+
+.boolean-light.off {
+    background: #4a4a4a;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* ================================================
+   Connection Status Indicator
+   ================================================ */
+
+#connection-status {
+    position: fixed;
+    top: 4px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--driveboard-bg-secondary);
+    border: var(--driveboard-widget-border);
+    border-radius: var(--driveboard-border-radius);
+    font-family: var(--driveboard-font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 1000;
+}
+
+#connection-status::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-connected {
+    color: var(--driveboard-connected);
+}
+
+.status-connected::before {
+    background: var(--driveboard-connected);
+    box-shadow: 0 0 8px var(--driveboard-connected);
+}
+
+.status-disconnected {
+    color: var(--driveboard-disconnected);
+}
+
+.status-disconnected::before {
+    background: var(--driveboard-disconnected);
+    box-shadow: 0 0 8px var(--driveboard-disconnected);
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}

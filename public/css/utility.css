@@ -1,0 +1,35 @@
+/* ================================================
+   Utility Classes
+   ================================================ */
+
+.widget-span-2 {
+    grid-column: span 2;
+}
+
+.widget-span-3 {
+    grid-column: span 3;
+}
+
+.widget-tall {
+    grid-row: span 2;
+}
+
+.text-mono {
+    font-family: var(--driveboard-font-mono);
+}
+
+.text-connected {
+    color: var(--driveboard-connected);
+}
+
+.text-disconnected {
+    color: var(--driveboard-disconnected);
+}
+
+.text-warning {
+    color: var(--driveboard-warning);
+}
+
+.text-error {
+    color: var(--driveboard-error);
+}

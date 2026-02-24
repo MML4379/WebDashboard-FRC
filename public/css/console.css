@@ -1,0 +1,45 @@
+/* ================================================
+   Console / Log Widget
+   ================================================ */
+
+.console-widget {
+    grid-column: span 2;
+}
+
+.console-content {
+    padding: 8px;
+    background: #0a0a0a;
+    font-family: var(--driveboard-font-mono);
+    font-size: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.console-line {
+    padding: 2px 8px;
+    border-left: 3px solid transparent;
+}
+
+.console-line:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.console-line.info {
+    border-left-color: var(--driveboard-accent);
+    color: var(--driveboard-text-primary);
+}
+
+.console-line.warning {
+    border-left-color: var(--driveboard-warning);
+    color: var(--driveboard-warning);
+}
+
+.console-line.error {
+    border-left-color: var(--driveboard-error);
+    color: var(--driveboard-error);
+}
+
+.console-timestamp {
+    color: var(--driveboard-text-muted);
+    margin-right: 8px;
+}

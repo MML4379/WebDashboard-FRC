@@ -1,0 +1,40 @@
+.no-data {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 40px;
+    color: var(--driveboard-text-muted);
+    text-align: center;
+}
+
+.no-data::before {
+    content: '⚠';
+    font-size: 32px;
+    opacity: 0.5;
+}
+
+.no-data-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--driveboard-text-secondary);
+}
+
+.no-data-subtitle {
+    font-size: 13px;
+}
+
+
+.alliance-red .card-header {
+    background: linear-gradient(180deg, #c62828 0%, #8e0000 100%);
+}
+
+.alliance-red .data-subsection {
+    border-left-color: #e53935;
+}
+
+.alliance-blue .card-header {
+    background: linear-gradient(180deg, var(--driveboard-header-gradient-end) 0%, var(--driveboard-header-gradient-start) 100%);
+}

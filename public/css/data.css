@@ -1,0 +1,111 @@
+/* ================================================
+   Data Rows
+   ================================================ */
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: var(--driveboard-bg-secondary);
+    border-radius: 3px;
+    border: 1px solid transparent;
+    transition: all 0.15s ease;
+    margin: 0;
+}
+
+.data-row:hover {
+    background: #363636;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.data-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--driveboard-text-secondary);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.data-value {
+    font-family: var(--driveboard-font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    text-align: right;
+    min-width: 60px;
+}
+
+/* Data Type Styling */
+.data-value[data-type="number"] {
+    color: var(--driveboard-number);
+}
+
+.data-value[data-type="boolean"] {
+    min-width: auto;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-value[data-type="boolean"][data-value="true"] {
+    background: var(--driveboard-boolean-true);
+    color: #1e1e1e;
+}
+
+.data-value[data-type="boolean"][data-value="false"] {
+    background: var(--driveboard-boolean-false);
+    color: #1e1e1e;
+}
+
+.data-value[data-type="string"] {
+    color: var(--driveboard-string);
+}
+
+.data-value[data-type="array"] {
+    color: var(--driveboard-array);
+    font-size: 11px;
+}
+
+/* ================================================
+   Data Subsections
+   ================================================ */
+
+.data-subsection {
+    margin-bottom: 8px;
+    padding: 8px;
+    background: var(--driveboard-bg-tertiary);
+    border-radius: var(--driveboard-border-radius);
+    border-left: 3px solid var(--driveboard-accent);
+}
+
+.data-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.subsection-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--driveboard-accent-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.subsection-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}

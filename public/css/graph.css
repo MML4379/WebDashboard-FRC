@@ -1,0 +1,23 @@
+/* ================================================
+   Graph Widget
+   ================================================ */
+
+.graph-widget {
+    grid-column: span 2;
+}
+
+.graph-content {
+    padding: 12px;
+    background: #0f0f0f;
+    min-height: 150px;
+}
+
+.graph-canvas {
+    width: 100%;
+    height: 120px;
+    background: 
+        linear-gradient(rgba(0, 122, 204, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 122, 204, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border-radius: var(--driveboard-border-radius);
+}

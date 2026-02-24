@@ -1,0 +1,20 @@
+@media (max-width: 1200px) {
+    .field2d-card,
+    .graph-widget,
+    .camera-widget,
+    .console-widget {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    #robot-data-container {
+        grid-template-columns: 1fr;
+    }
+    
+    #connection-status {
+        top: auto;
+        bottom: 8px;
+        right: 8px;
+    }
+}
