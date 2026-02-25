@@ -105,8 +105,7 @@ function setupField2dCanvas(canvas, data) {
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
         
-        const ctx = canvas.getContext('2d');
-        ctx.scale(dpr, dpr);
+        // Don't scale here - drawField2d handles it with setTransform
         
         console.log(`[Field2D] Canvas resized to ${width}x${height}`);
         return { width, height };
@@ -132,10 +131,14 @@ function setupField2dCanvas(canvas, data) {
 // Main Drawing Function
 // ================================================
 
-function drawField2d(canvas, data, dimensions) {
+export function drawField2d(canvas, data, dimensions) {
     const ctx = canvas.getContext('2d');
     const { width, height } = dimensions;
     const colors = FIELD_CONFIG.colors;
+    
+    // Reset transform and apply DPR scaling
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     
     ctx.clearRect(0, 0, width, height);
     

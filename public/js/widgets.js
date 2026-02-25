@@ -76,7 +76,7 @@ export function createProgressBar(key, value) {
 }
 
 /**
- * Create a chooser/selector widget (interactive)
+ * Create a chooser/selector widget (dropdown)
  */
 export function createChooserWidget(key, data, ntKey = null) {
     const widget = document.createElement('div');
@@ -89,53 +89,41 @@ export function createChooserWidget(key, data, ntKey = null) {
     const chooserKey = ntKey || key;
     
     const optionsHtml = options.map(opt => `
-        <div class="chooser-option ${opt === selected ? 'selected' : ''}" 
-             data-value="${opt}" 
-             data-chooser-key="${chooserKey}">
-            ${opt}
-        </div>
+        <option value="${opt}" ${opt === selected ? 'selected' : ''}>${opt}</option>
     `).join('');
     
     widget.innerHTML = `
-        <div class="chooser-options">
+        <select class="chooser-select" data-chooser-key="${chooserKey}">
             ${optionsHtml}
-        </div>
+        </select>
     `;
     
-    // Add click handlers
-    widget.querySelectorAll('.chooser-option').forEach(option => {
-        option.addEventListener('click', async (e) => {
-            const target = e.currentTarget;
-            const value = target.dataset.value;
-            const key = target.dataset.chooserKey;
+    const select = widget.querySelector('.chooser-select');
+    
+    // Add change handler
+    select.addEventListener('change', async (e) => {
+        const value = e.target.value;
+        const key = e.target.dataset.chooserKey;
+        const previousValue = selected;
+        
+        // Add loading state
+        select.classList.add('loading');
+        select.disabled = true;
+        
+        // Send to robot
+        try {
+            await sendChooserSelection(key, value);
+            select.classList.remove('loading');
+            select.disabled = false;
+            console.log(`[Chooser] Selection confirmed: ${key} = ${value}`);
+        } catch (error) {
+            console.error('[Chooser] Failed to send selection:', error);
             
-            // Don't re-select already selected option
-            if (target.classList.contains('selected')) return;
-            
-            // Store previous selection for rollback
-            const previousSelected = widget.querySelector('.chooser-option.selected');
-            
-            // Optimistically update UI
-            widget.querySelectorAll('.chooser-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            target.classList.add('selected', 'loading');
-            
-            // Send to robot
-            try {
-                await sendChooserSelection(key, value);
-                target.classList.remove('loading');
-                console.log(`[Chooser] Selection confirmed: ${key} = ${value}`);
-            } catch (error) {
-                console.error('[Chooser] Failed to send selection:', error);
-                
-                // Rollback on failure
-                target.classList.remove('selected', 'loading');
-                if (previousSelected) {
-                    previousSelected.classList.add('selected');
-                }
-            }
-        });
+            // Rollback on failure
+            select.value = previousValue;
+            select.classList.remove('loading');
+            select.disabled = false;
+        }
     });
     
     return widget;

@@ -36,6 +36,12 @@ export function createCategoryCard(categoryName, categoryData) {
     const card = document.createElement('div');
     card.className = 'category-card';
     
+    // Add compact class for simple single-value cards
+    const isSimpleCard = isChooser(categoryData) || isPrimitive(categoryData);
+    if (isSimpleCard) {
+        card.classList.add('compact-card');
+    }
+    
     card.innerHTML = `
         <div class="card-header">${categoryName}</div>
         <div class="card-content"></div>
