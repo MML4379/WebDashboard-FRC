@@ -53,6 +53,7 @@ function logStartup() {
 
 document.addEventListener('DOMContentLoaded', init);
 
+
 // ================================================
 // Exports (for external access if needed)
 // ================================================

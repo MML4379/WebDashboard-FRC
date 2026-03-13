@@ -75,8 +75,7 @@ export function scrubData(data) {
     const cleaned = {};
     for (const key in data) {
         const lowerKey = key.toLowerCase();
-        const forbidden = lowerKey.includes('module') || lowerKey.includes('pathplanner') || 
-            lowerKey.includes('drivestate') || lowerKey.includes('command');
+        const forbidden = lowerKey.includes('module') || lowerKey.includes('pathplanner');
 
         if (!forbidden) {
             cleaned[key] = scrubData(data[key]);

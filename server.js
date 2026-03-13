@@ -1,50 +1,31 @@
 const express = require('express');
-
 const path = require('path');
-
 const cors = require('cors');
-
 const { NetworkTables, NetworkTablesTypeInfos } = require('ntcore-ts-client');
-
 const colors = require('colors');
-
 const os = require('os');
-
 require('dotenv').config();
 
-
-
 const app = express();
-
 const PORT = process.env.PORT || 3000;
-
 const TEAM = process.env.TEAM || 0;
-
 const LOCAL = '127.0.0.1';
-
-
 
 const args = process.argv.slice(2);
 
 
 
 app.use(cors());
-
 app.use(express.json());
 
 
 
 // --- CRITICAL: GLOBAL ERROR HANDLER ---
-
 // WPILib 2026/NT4.1 can sometimes send packets that trigger Zod validation failures
-
 // in the client. This prevents the "ZodError: Number must be >= 0" crash.
 
 process.on('uncaughtException', (error) => {
-
     const isZodError = error?.name === 'ZodError' || error?.stack?.includes('ntcore-ts-client');
-
-   
 
     if (isZodError) {
 
@@ -278,7 +259,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 
-app.get("*Dashboard", (req, res) => {
+app.get("*e", (req, res) => {
 
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 
@@ -309,9 +290,6 @@ function getIP() {
 
 
 app.listen(PORT, () => {
-
     console.log(`\nServer active at: http://${getIP()}:${PORT}`.green);
-
     console.log(`Mode: ${args[0] === 'local' ? 'Simulation' : 'Robot'}`.bgWhite.blue);
-
 });
